@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebViewSample</title>
+</head>
+
+<body>
+    <button onclick="showToast('This toast is call by javascript')">Show Toast</button>
+    <button onclick="alertAppVersion()">App Version Name</button>
+</body>
+
+<script>
+    function showToast(msg) {
+        Android.showToast(msg)
+    }
+
+    function alertAppVersion() {
+        alert(Android.getAppVersion())
+    }
+</script>
+
+</html>
