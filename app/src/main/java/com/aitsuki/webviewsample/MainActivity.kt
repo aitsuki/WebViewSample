@@ -6,6 +6,9 @@ import android.text.InputType
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.getInputField
+import com.afollestad.materialdialogs.input.input
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -41,18 +44,16 @@ class MainActivity : AppCompatActivity() {
         defaultUrl: String = "https://www.bilibili.com",
         onConfirmClick: (String) -> Unit
     ) {
-        val editText = EditText(this)
-        editText.inputType = InputType.TYPE_TEXT_VARIATION_URI
-        editText.hint = "Please enter a url"
-        editText.setText(defaultUrl)
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Browser")
-            .setView(editText)
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Confirm") { _, _ ->
-                val text = editText.text.toString()
-                onConfirmClick(text)
-            }
-            .show()
+        MaterialDialog(this)
+            .input(
+                hint = "Please enter a url",
+                prefill = defaultUrl,
+                inputType = InputType.TYPE_TEXT_VARIATION_URI
+            )
+            .title(text = "Browser")
+            .negativeButton(text = "Cancel")
+            .positiveButton(text = "Confirm") {
+                onConfirmClick(it.getInputField().text.toString())
+            }.show()
     }
 }

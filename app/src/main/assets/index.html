@@ -10,7 +10,10 @@
 
 <body>
     <button onclick="showToast('This toast is call by javascript')">Show Toast</button>
-    <button onclick="alertAppVersion()">App Version Name</button>
+    <button onclick="alertAppVersion()">App Version Name (Sync)</button>
+    <button onclick="pickPhoto()">Pick Photo (Async)</button>
+    <div id="container" style="margin-top: 10px;">
+    </div>
 </body>
 
 <script>
@@ -20,6 +23,21 @@
 
     function alertAppVersion() {
         alert(Android.getAppVersion())
+    }
+
+    function pickPhoto() {
+        Android.pickPhoto()
+    }
+
+    function onPickPhotoResult(base64Image) {
+        let container = document.getElementById("container")
+        while(container.hasChildNodes()) {
+            container.removeChild(container.firstChild)
+        }
+        let img = document.createElement("img")
+        img.src = "data:image/jpeg;base64," + base64Image
+        img.setAttribute("width", "100%")
+        container.append(img)
     }
 </script>
 

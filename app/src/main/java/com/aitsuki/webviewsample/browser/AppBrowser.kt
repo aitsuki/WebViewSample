@@ -35,18 +35,24 @@ class AppBrowser(container: FrameLayout) {
         errorView = View.inflate(container.context, R.layout.app_browser_error_layout, null)
         errorView.findViewById<Button>(R.id.retry_button).setOnClickListener { reload() }
         errorView.isVisible = false
-        container.addView(webView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        ))
-        container.addView(errorView, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        ))
-        container.addView(progressBar, ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
+        container.addView(
+            webView, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        container.addView(
+            errorView, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        container.addView(
+            progressBar, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
         setWebViewSettings(webView)
         setBrowserClients(webView)
         webView.setOnContentReachToBottomListener {
@@ -91,6 +97,11 @@ class AppBrowser(container: FrameLayout) {
         webView.addJavascriptInterface(obj, name)
     }
 
+    /**
+     * param 是 String 类型，如果 js 函数的入参是 String， 需要用单引号或双引号括起来。
+     * 例如：callJs("showMessage", "'hello, world!'")
+     *      callJs("showMessage", "\"hello, world!\"")
+     */
     fun callJs(func: String, param: String, callback: ValueCallback<String?>? = null) {
         webView.evaluateJavascript("""javascript:$func($param)""", callback)
     }
@@ -139,6 +150,20 @@ class AppBrowser(container: FrameLayout) {
                 return urlRouter?.route(url) ?: false
             }
 
+            override fun onReceivedHttpError(
+                view: WebView?,
+                request: WebResourceRequest,
+                errorResponse: WebResourceResponse
+            ) {
+                super.onReceivedHttpError(view, request, errorResponse)
+                Log.d(
+                    TAG,
+                    "onReceivedHttpError: url = ${request.url}, code = ${errorResponse.statusCode}, message = ${
+                        errorResponse.data?.readBytes()?.let { String(it) }
+                    }"
+                )
+            }
+
             @Suppress("OVERRIDE_DEPRECATION")
             override fun onReceivedError(
                 view: WebView,
@@ -146,7 +171,10 @@ class AppBrowser(container: FrameLayout) {
                 description: String,
                 failingUrl: String
             ) {
-                Log.e(TAG, "onReceivedError: code = $errorCode, desc = $description, url = $failingUrl")
+                Log.e(
+                    TAG,
+                    "onReceivedError: code = $errorCode, desc = $description, url = $failingUrl"
+                )
                 showError()
             }
 
